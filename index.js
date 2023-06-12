@@ -235,3 +235,21 @@ async function run() {
         if(!userEmail){
           res.send([])
         }
+
+        const decodedEmail = req.decoded.email;
+        if(userEmail !== decodedEmail){
+          return res.status(403).send({error: true, message: 'forbidden access'})
+  
+        }
+  
+        const query = {email: userEmail}
+        const result = await enrollCollection.find(query).toArray();
+        res.send(result)
+      })
+  
+      app.delete('/enrolled/:id', async (req, res)=>{
+        const id = req.params.id;
+        const query = {_id : new ObjectId(id)}
+        const result = await enrollCollection.deleteOne(query)
+        res.send(result)
+      })
