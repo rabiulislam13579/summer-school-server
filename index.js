@@ -145,3 +145,69 @@ async function run() {
         const result = await usersCollection.deleteOne(query)
         res.send(result)
       })
+
+       //==============classes ===========
+
+    app.get('/classes' , async(req, res)=>{
+        const result = await classCollection.find().toArray();
+        res.send(result)
+      })
+  
+      app.get('/classes/:id', async (req, res) => {
+        const id = req.params.id
+        console.log(id);
+        const query = { _id: new ObjectId(id) }
+        const result = await classCollection.findOne(query);
+        res.send(result)
+    })
+  
+    app.put('/classes/:id', async (req, res) => {
+      const id = req.params.id;
+      const option = { upsert: true }
+      const filter = { _id: new ObjectId(id) }
+      const updatedCourse = req.body;
+      const course = {
+          $set: {
+              courseName: updatedCourse.courseName,
+              instructorName: updatedCourse.instructorName,
+              seats: updatedCourse.seats,
+              image: updatedCourse.image,
+              price: updatedCourse.price,
+              quantity: updatedCourse.rating
+          }
+  
+      }
+      const result = await classCollection.updateOne(filter, course, option);
+      res.send(result)
+  })
+  
+      app.post('/classes', async(req, res)=>{
+        const data = req.body;
+       
+        const result = await classCollection.insertOne(data);
+        res.send(result)
+  
+      })
+  
+  
+      app.delete('/classes/:id', async (req, res)=>{
+        const id = req.params.id;
+        const query = {_id : new ObjectId(id)}
+        const result = await classCollection.deleteOne(query)
+        res.send(result)
+      })
+  
+  
+      app.post('/create-payment-intent',  async (req, res) => {
+        const { price } = req.body;
+        const amount = price*100;
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: amount,
+          currency: 'usd',
+          payment_method_types: ['card']
+        });
+        res.send({
+          clientSecret:paymentIntent.client_secret
+        })
+       
+          }),
