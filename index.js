@@ -56,3 +56,14 @@ async function run() {
     const instructorCollection = client.db('instructorManager').collection('instructors')
     const enrollCollection = client.db('enrollManager').collection('enrolls')
     const paymentCollection = client.db('paymentManager').collection('payments')
+
+    //======payments==========
+
+    app.post('/payments', async(req, res)=>{
+        const payment = req.body;
+        const insertResult = await paymentCollection.insertOne(payment)
+  
+        const query = {_id: { $in: payment.courseItems.map(id=>new ObjectId(id))}}
+        const deleteResult = await enrollCollection.deleteMany(query)
+        res.send({result:insertResult, deleteResult})
+      })
