@@ -211,3 +211,10 @@ async function run() {
         })
        
           }),
+
+           //======instructors=========
+
+    app.get('/instructors' , async(req, res)=>{
+        const result = await instructorCollection.find().toArray();
+        res.send(result)
+      })
