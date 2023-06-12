@@ -67,3 +67,23 @@ async function run() {
         const deleteResult = await enrollCollection.deleteMany(query)
         res.send({result:insertResult, deleteResult})
       })
+
+      //======jwt=========
+
+    app.post('/jwt', (req,res)=>{
+        const user = req.body;
+        const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET , { expiresIn: '48hr'})
+        res.send({token})
+      })
+  
+      const verifyAdmin = async(req, res, next)=>{
+        const email = req.decoded.email;
+        const query = {email : email}
+        const user = await usersCollection.findOne(query)
+        if (user?.role !== 'admin'){
+          return res.status(403).send({error: true, message: 'forbidden access'})
+  
+        }
+        next();
+  
+      }
